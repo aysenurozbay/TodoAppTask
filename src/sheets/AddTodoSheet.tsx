@@ -10,7 +10,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import {TodoType} from '../Types';
 import {generateUUID} from '../createId';
 import {useDispatch} from 'react-redux';
-import {todoSlice} from '../store/todoReducer';
+import {setAsyncStorageData, todoSlice} from '../store/todoReducer';
+import {AppDispatch} from '../store';
 
 const AddTodoSheet = (props: SheetProps) => {
   const actionSheetRef = useRef<ActionSheetRef>(null);
@@ -20,7 +21,7 @@ const AddTodoSheet = (props: SheetProps) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [items, setItems] = useState([
     {label: 'Home', value: 'Home'},
@@ -38,7 +39,9 @@ const AddTodoSheet = (props: SheetProps) => {
         category: selectedCategory,
         detail: detail,
       };
-      dispatch(todoSlice.actions.addTodo({todo: newtoDo}));
+      // dispatch(todoSlice.actions.addTodo({todo: newtoDo}));
+      dispatch(setAsyncStorageData(newtoDo));
+
       SheetManager.hide(props.sheetId);
     } else {
       Alert.alert('Be sure that every field is filled');

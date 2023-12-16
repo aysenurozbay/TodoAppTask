@@ -2,7 +2,8 @@ import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import TodoListScreen from '../screens/TodoListScreen';
 
-import {colors} from '../colors';
+import {StyleSheet, View} from 'react-native';
+import AllTodoListScreen from '../screens/AllTodoListScreen';
 
 const TabNavigator = () => {
   const Tab = createMaterialTopTabNavigator();
@@ -10,29 +11,46 @@ const TabNavigator = () => {
   const categoryTabs = ['Waiting', 'Pending', 'Done'];
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarLabelStyle: {fontSize: 12},
-        tabBarItemStyle: {},
-        tabBarActiveTintColor: colors.orange,
-        tabBarInactiveTintColor: colors.gray,
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.orange,
-          height: 1,
-        },
-      }}>
-      {categoryTabs.map(item => (
-        <Tab.Screen
-          name={`${item} Category Screen`}
-          options={{
-            title: item,
-          }}
-          component={TodoListScreen}
-          initialParams={{category: item}}
-        />
-      ))}
-    </Tab.Navigator>
+    <View style={styles.container}>
+      {categoryTabs && (
+        <Tab.Navigator screenOptions={{lazy: true}}>
+          <Tab.Screen
+            name="AllToons"
+            component={AllTodoListScreen}
+            options={{
+              title: 'All',
+            }}
+          />
+          {categoryTabs.map(item => {
+            return (
+              <Tab.Screen
+                key={'toons-genre-screen' + '-' + item}
+                name={item}
+                component={TodoListScreen}
+                options={{title: item}}
+                initialParams={{status: item}}
+              />
+            );
+          })}
+        </Tab.Navigator>
+      )}
+    </View>
   );
 };
 
 export default TabNavigator;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  columnWrapperStyle: {
+    padding: 10,
+  },
+  skeletonContainer: {
+    width: '100%',
+    padding: 8,
+  },
+  cardStyle: {
+    marginVertical: 4,
+  },
+});

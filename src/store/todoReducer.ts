@@ -1,5 +1,6 @@
-import {PayloadAction, createSlice} from '@reduxjs/toolkit';
+import {PayloadAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {TodoType} from '../Types';
+import {getData, storeData} from '../helpers/AsyncStorageHelper';
 
 export interface TodoReducerState {
   todos: TodoType[];
@@ -12,6 +13,33 @@ const initialState: TodoReducerState = {
   selectedTodo: null,
   filteredTodo: [],
 };
+export const fetchInitialData = createAsyncThunk(
+  'waterTracker/fetchInitialData',
+  async (_, {rejectWithValue}) => {
+    try {
+      const retrievedData = await getData();
+      console.log('Gelen Veri', retrievedData);
+
+      return retrievedData;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+
+export const setAsyncStorageData = createAsyncThunk(
+  'waterAmount/setAsyncStorageData',
+  async (data: TodoType, {rejectWithValue}) => {
+    try {
+      await storeData(data);
+      console.log('setledi', data);
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
 
 export const todoSlice = createSlice({
   name: 'todo',
@@ -27,11 +55,12 @@ export const todoSlice = createSlice({
     },
     filterByCategory: (state, action: PayloadAction<{category: string}>) => {
       const category = action.payload.category;
-      state.todos = state.todos.filter(p => p.category === category);
+      state.filteredTodo = state.todos.filter(p => p.category === category);
     },
     filterByStatus: (state, action: PayloadAction<{status: string}>) => {
       const status = action.payload.status;
-      state.todos = state.todos.filter(p => p.status === status);
+      state.filteredTodo = state.todos.filter(p => p.status === status);
+      console.log('filterByStatus--->', state.filteredTodo);
     },
     changeTodoStatus: (
       state,
@@ -44,5 +73,21 @@ export const todoSlice = createSlice({
         todo.status = status;
       }
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(fetchInitialData.fulfilled, (state, action) => {
+      if (action.payload) {
+        const convertToObject = action.payload;
+        state.todos = convertToObject;
+        console.log('state.todos', state.todos);
+      }
+    });
+    builder.addCase(setAsyncStorageData.fulfilled, (state, action) => {
+      console.log('action.payload', action.payload);
+
+      if (action.payload) {
+        state.todos.push(action.payload);
+      }
+    });
   },
 });

@@ -6,70 +6,65 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import React from 'react';
 import {colors} from '../colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store';
+import {AppDispatch, RootState} from '../store';
 import {GeneralNavigationParamList, TodoType} from '../Types';
-import {todoSlice} from '../store/todoReducer';
+import {fetchInitialData, todoSlice} from '../store/todoReducer';
 
 import {MaterialTopTabScreenProps} from '@react-navigation/material-top-tabs';
-import React, {useEffect} from 'react';
+import {getData, storeData} from '../helpers/AsyncStorageHelper';
+import {generateUUID} from '../createId';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TodoListScreen from './TodoListScreen';
 
 type CategoryTabScreenProps =
   MaterialTopTabScreenProps<GeneralNavigationParamList>;
 
-const TodoListScreen = ({route}: CategoryTabScreenProps) => {
-  console.log('first', route.params);
-  const dispatch = useDispatch();
-
-  const status = 'burda';
+const AllTodoListScreen = ({}: CategoryTabScreenProps) => {
+  const dispatch = useDispatch<AppDispatch>();
 
   // useEffect(() => {
   //   dispatch(todoSlice.actions.filterByStatus({status: status}));
   // }, [status, dispatch]);
 
-  const todos = useSelector((state: RootState) => state.todos.filteredTodo);
+  const todos = useSelector((state: RootState) => state.todos.todos);
   // const filteredTodos = useSelector(
   //   (state: RootState) => state.todos.filteredTodo,
   // );
 
-  // const addTodo = () => {
-  //   const newtoDo: TodoType = {
-  //     id: generateUUID(),
-  //     title: 'string',
-  //     status: 'Done',
-  //     category: 'Hobby',
-  //     detail: 'string',
-  //   };
-
-  //   dispatch(todoSlice.actions.addTodo({todo: newtoDo}));
-
-  useEffect(() => {
-    dispatch(todoSlice.actions.filterByStatus({status: status}));
-  }, [dispatch, status]);
-
-  const filterTodo = () => {
-    dispatch(todoSlice.actions.filterByStatus({status: status}));
+  const addTodo = () => {
+    const newtoDo: TodoType = {
+      id: generateUUID(),
+      title: 'string',
+      status: 'Done',
+      category: 'Hobby',
+      detail: 'string',
+    };
+    storeData(newtoDo);
+    // dispatch(todoSlice.actions.addTodo({todo: newtoDo}));
   };
+
   const changeStatus = (toDoid: string) => {
     dispatch(
       todoSlice.actions.changeTodoStatus({id: toDoid, newStatus: 'Pending'}),
     );
   };
 
+  React.useEffect(() => {
+    dispatch(fetchInitialData());
+  }, [dispatch]);
+
   return (
     <View style={styles.container}>
-      <Button title="filter" onPress={filterTodo} />
-
+      <Button title="add" onPress={addTodo} />
+      <Button title="add" onPress={() => AsyncStorage.clear()} />
       {todos && (
         <FlatList
           data={todos}
           renderItem={({item}: {item: TodoType}) => (
-            <TouchableOpacity onPress={() => changeStatus(item.id)}>
-              <Text>
-                {item.title} - {item.category} - {item.status}
-              </Text>
-            </TouchableOpacity>
+            <TodoListScreen item={item} />
           )}
           keyExtractor={(item: TodoType) => item.id}
         />
@@ -78,7 +73,7 @@ const TodoListScreen = ({route}: CategoryTabScreenProps) => {
   );
 };
 
-export default TodoListScreen;
+export default AllTodoListScreen;
 
 const styles = StyleSheet.create({
   container: {
