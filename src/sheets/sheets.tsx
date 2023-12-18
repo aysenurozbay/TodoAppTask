@@ -1,6 +1,6 @@
 import {registerSheet} from 'react-native-actions-sheet';
-import AddTodoSheet from './AddTodoSheet';
+import TodoSheet from './TodoSheet';
 
-registerSheet('addTodo-sheet', AddTodoSheet);
+registerSheet('todo-sheet', TodoSheet);
 
 export {};

@@ -1,56 +1,45 @@
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import TodoListScreen from '../screens/TodoListScreen';
 
-import {StyleSheet, View} from 'react-native';
-import AllTodoListScreen from '../screens/AllTodoListScreen';
+import {colors} from '../helpers/colors';
+import TodoListScreen from '../screens/TodoListScreen';
+import {AppParams} from '../Types';
 
 const TabNavigator = () => {
-  const Tab = createMaterialTopTabNavigator();
-
-  const categoryTabs = ['Waiting', 'Pending', 'Done'];
+  const Tab = createMaterialTopTabNavigator<AppParams>();
 
   return (
-    <View style={styles.container}>
-      {categoryTabs && (
-        <Tab.Navigator screenOptions={{lazy: true}}>
-          <Tab.Screen
-            name="AllToons"
-            component={AllTodoListScreen}
-            options={{
-              title: 'All',
-            }}
-          />
-          {categoryTabs.map(item => {
-            return (
-              <Tab.Screen
-                key={'toons-genre-screen' + '-' + item}
-                name={item}
-                component={TodoListScreen}
-                options={{title: item}}
-                initialParams={{status: item}}
-              />
-            );
-          })}
-        </Tab.Navigator>
-      )}
-    </View>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarLabelStyle: {fontSize: 12},
+        tabBarItemStyle: {},
+        tabBarActiveTintColor: colors.orange,
+        tabBarInactiveTintColor: colors.gray,
+        tabBarIndicatorStyle: {
+          backgroundColor: colors.orange,
+          height: 1,
+        },
+      }}>
+      <Tab.Screen
+        name={'Waiting'}
+        options={{
+          title: 'Waiting',
+        }}
+        component={TodoListScreen}
+        key={'AllCategoriesScreen'}
+        initialParams={{statusType: 'Waiting'}}
+      />
+      <Tab.Screen
+        name={'Done'}
+        options={{
+          title: 'Done',
+        }}
+        component={TodoListScreen}
+        key={'AllCategoriesScreen'}
+        initialParams={{statusType: 'Done'}}
+      />
+    </Tab.Navigator>
   );
 };
 
 export default TabNavigator;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  columnWrapperStyle: {
-    padding: 10,
-  },
-  skeletonContainer: {
-    width: '100%',
-    padding: 8,
-  },
-  cardStyle: {
-    marginVertical: 4,
-  },
-});

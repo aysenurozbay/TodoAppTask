@@ -1,6 +1,11 @@
 import {PayloadAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {TodoType} from '../Types';
-import {getData, storeData} from '../helpers/AsyncStorageHelper';
+import {
+  getData,
+  removeData,
+  storeData,
+  updateData,
+} from '../helpers/AsyncStorageHelper';
 
 export interface TodoReducerState {
   todos: TodoType[];
@@ -18,8 +23,6 @@ export const fetchInitialData = createAsyncThunk(
   async (_, {rejectWithValue}) => {
     try {
       const retrievedData = await getData();
-      console.log('Gelen Veri', retrievedData);
-
       return retrievedData;
     } catch (error) {
       return rejectWithValue(error);
@@ -34,6 +37,28 @@ export const setAsyncStorageData = createAsyncThunk(
       await storeData(data);
       console.log('setledi', data);
 
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+export const updateAsyncStorageData = createAsyncThunk(
+  'waterAmount/updateAsyncStorageData',
+  async (data: TodoType, {rejectWithValue}) => {
+    try {
+      await updateData(data);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+export const deleteAsyncStorageData = createAsyncThunk(
+  'waterAmount/deleteAsyncStorageData',
+  async (data: string, {rejectWithValue}) => {
+    try {
+      await removeData(data);
       return data;
     } catch (error) {
       return rejectWithValue(error);
@@ -79,15 +104,16 @@ export const todoSlice = createSlice({
       if (action.payload) {
         const convertToObject = action.payload;
         state.todos = convertToObject;
-        console.log('state.todos', state.todos);
       }
     });
     builder.addCase(setAsyncStorageData.fulfilled, (state, action) => {
-      console.log('action.payload', action.payload);
-
       if (action.payload) {
         state.todos.push(action.payload);
       }
     });
+    builder.addCase(updateAsyncStorageData.fulfilled, (state, action) => {
+      state.todos = [action.payload];
+    });
+    // builder.addCase(deleteAsyncStorageData.fulfilled, () => {});
   },
 });

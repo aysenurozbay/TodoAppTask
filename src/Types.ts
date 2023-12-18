@@ -1,22 +1,16 @@
 export type TodoType = {
   id: string;
   title: string;
-  status: 'Done' | 'Pending' | 'Waiting';
+  status: 'Done' | 'Waiting';
   category: 'Home' | 'School' | 'Hobby' | 'Other';
   detail: string;
 };
 
 export type AppParams = {
   Waiting: {
-    status: string;
+    statusType: string;
   };
   Done: {
-    status: string;
-  };
-  Pending: {
-    status: string;
+    statusType: string;
   };
 };
-export interface GeneralNavigationParamList extends Record<string, any> {
-  [key: string]: Record<string, any>;
-}

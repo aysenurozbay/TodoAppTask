@@ -1,80 +1,35 @@
-import {
-  Button,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {colors} from '../colors';
+import React from 'react';
+import {ScrollView, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store';
-import {GeneralNavigationParamList, TodoType} from '../Types';
-import {todoSlice} from '../store/todoReducer';
+import {RouteProp} from '@react-navigation/native';
 
-import {MaterialTopTabScreenProps} from '@react-navigation/material-top-tabs';
-import React, {useEffect} from 'react';
+import {AppParams} from '../Types';
+import {AppDispatch, RootState} from '../store';
+import {fetchInitialData} from '../store/todoReducer';
+import RenderTodosComponent from '../components/RenderTodosComponent';
 
-type CategoryTabScreenProps =
-  MaterialTopTabScreenProps<GeneralNavigationParamList>;
+type WaitingScreenRouteProp = RouteProp<AppParams, 'Waiting' | 'Done'>;
 
-const TodoListScreen = ({route}: CategoryTabScreenProps) => {
-  console.log('first', route.params);
-  const dispatch = useDispatch();
+type WaitingScreenProps = {
+  route: WaitingScreenRouteProp;
+};
 
-  const status = 'burda';
+const TodoListScreen = ({route}: WaitingScreenProps) => {
+  const {statusType} = route.params;
 
-  // useEffect(() => {
-  //   dispatch(todoSlice.actions.filterByStatus({status: status}));
-  // }, [status, dispatch]);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const todos = useSelector((state: RootState) => state.todos.filteredTodo);
-  // const filteredTodos = useSelector(
-  //   (state: RootState) => state.todos.filteredTodo,
-  // );
+  const todos = useSelector((state: RootState) => state.todos.todos);
+  const filteredTodos = todos.filter(todo => todo.status === statusType);
 
-  // const addTodo = () => {
-  //   const newtoDo: TodoType = {
-  //     id: generateUUID(),
-  //     title: 'string',
-  //     status: 'Done',
-  //     category: 'Hobby',
-  //     detail: 'string',
-  //   };
-
-  //   dispatch(todoSlice.actions.addTodo({todo: newtoDo}));
-
-  useEffect(() => {
-    dispatch(todoSlice.actions.filterByStatus({status: status}));
-  }, [dispatch, status]);
-
-  const filterTodo = () => {
-    dispatch(todoSlice.actions.filterByStatus({status: status}));
-  };
-  const changeStatus = (toDoid: string) => {
-    dispatch(
-      todoSlice.actions.changeTodoStatus({id: toDoid, newStatus: 'Pending'}),
-    );
-  };
+  React.useEffect(() => {
+    dispatch(fetchInitialData());
+  }, [dispatch]);
 
   return (
-    <View style={styles.container}>
-      <Button title="filter" onPress={filterTodo} />
-
-      {todos && (
-        <FlatList
-          data={todos}
-          renderItem={({item}: {item: TodoType}) => (
-            <TouchableOpacity onPress={() => changeStatus(item.id)}>
-              <Text>
-                {item.title} - {item.category} - {item.status}
-              </Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item: TodoType) => item.id}
-        />
-      )}
-    </View>
+    <ScrollView style={styles.container}>
+      <RenderTodosComponent todos={filteredTodos} />
+    </ScrollView>
   );
 };
 
@@ -83,6 +38,5 @@ export default TodoListScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
   },
 });
