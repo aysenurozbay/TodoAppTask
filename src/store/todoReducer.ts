@@ -33,8 +33,6 @@ export const setAsyncStorageData = createAsyncThunk(
   async (data: TodoType, {rejectWithValue}) => {
     try {
       await storeData(data);
-      console.log('setledi', data);
-
       return data;
     } catch (error) {
       return rejectWithValue(error);
@@ -83,6 +81,5 @@ export const todoSlice = createSlice({
     builder.addCase(updateAsyncStorageData.fulfilled, (state, action) => {
       state.todos = [action.payload];
     });
-    // builder.addCase(deleteAsyncStorageData.fulfilled, () => {});
   },
 });

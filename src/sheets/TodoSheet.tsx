@@ -7,16 +7,18 @@ import ActionSheet, {
 } from 'react-native-actions-sheet';
 import {useDispatch} from 'react-redux';
 import SelectDropdown from 'react-native-select-dropdown';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {colors} from '../helpers/colors';
 import {TodoType} from '../Types';
 import {generateUUID} from '../helpers/createId';
+import {AppDispatch} from '../store';
 import {
   setAsyncStorageData,
   updateAsyncStorageData,
 } from '../store/todoReducer';
-import {AppDispatch} from '../store';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+
+import texts from '../helpers/Texts.json';
 
 interface ITodoSheetProps {
   todo?: TodoType;
@@ -75,16 +77,16 @@ const TodoSheet = ({sheetId, payload}: SheetProps<ITodoSheetProps>) => {
       gestureEnabled={true}>
       <View style={styles.inputContainer}>
         <View style={styles.input}>
-          <Text style={styles.subTitle}> Title : </Text>
+          <Text style={styles.subTitle}>{texts.formHeadlines.title} :</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={text => setTitle(text)}
             value={title}
-            placeholder="Title"
+            placeholder={texts.formHeadlines.details}
           />
         </View>
         <View style={[styles.input]}>
-          <Text style={styles.subTitle}> Category : </Text>
+          <Text style={styles.subTitle}>{texts.formHeadlines.category} :</Text>
           <SelectDropdown
             data={categories}
             onSelect={selectedItem => {
@@ -104,12 +106,12 @@ const TodoSheet = ({sheetId, payload}: SheetProps<ITodoSheetProps>) => {
           />
         </View>
         <View style={styles.input}>
-          <Text style={styles.subTitle}> Detail : </Text>
+          <Text style={styles.subTitle}>{texts.formHeadlines.details} :</Text>
           <TextInput
             style={[styles.textInput, styles.multilinetextInput]}
             onChangeText={text => setDetail(text)}
             value={detail}
-            placeholder="Detail!"
+            placeholder={texts.formHeadlines.details}
             multiline={true}
           />
         </View>
@@ -131,7 +133,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingVertical: 16,
     paddingHorizontal: 10,
-    // height: metrics.screenHeight - 60,
     justifyContent: 'flex-start',
     alignContent: 'center',
   },

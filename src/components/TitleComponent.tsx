@@ -1,16 +1,16 @@
 import {Text, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {SheetManager} from 'react-native-actions-sheet';
-import {colors} from '../helpers/colors';
 import PlusIcon from '../icons/PlusSignIcon';
+import {colors} from '../helpers/colors';
+import texts from '../helpers/Texts.json';
 
 const TitleComponent = () => {
+  const onPressHandler = () => SheetManager.show('todo-sheet');
   return (
     <SafeAreaView style={styles.headerContainer}>
-      <Text style={styles.title}> TODO LIST</Text>
-      <TouchableOpacity
-        onPress={() => SheetManager.show('todo-sheet')}
-        style={styles.addButton}>
+      <Text style={styles.title}>{texts.title}</Text>
+      <TouchableOpacity onPress={onPressHandler} style={styles.addButton}>
         <PlusIcon fill={colors.orange} size={30} />
       </TouchableOpacity>
     </SafeAreaView>

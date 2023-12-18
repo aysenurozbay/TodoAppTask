@@ -1,0 +1,12 @@
+{
+  "title": "Todo List",
+  "formHeadlines": {
+    "title": "Title",
+    "category": "Category",
+    "details": "Details"
+  },
+  "status": {
+    "waiting": "Waiting",
+    "done": "Done"
+  }
+}

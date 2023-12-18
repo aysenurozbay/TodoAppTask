@@ -16,10 +16,13 @@ import {
 import DoneIcon from '../icons/DoneIcon';
 import EditIcon from '../icons/EditIcon';
 import CrossIcon from '../icons/CrossIcon';
+import PendingIcon from '../icons/PendingIcon';
+import {Statuses} from '../helpers/consts';
 
 interface ITodoItemComponentProps {
   item: TodoType;
 }
+
 const TodoItemComponent = ({item}: ITodoItemComponentProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,6 +33,10 @@ const TodoItemComponent = ({item}: ITodoItemComponentProps) => {
   const changeStatus = (newStatus: 'Done' | 'Waiting') => {
     const updatedStatus = {...item, status: newStatus};
     dispatch(updateAsyncStorageData(updatedStatus));
+  };
+
+  const updateTodoButtonHandler = () => {
+    SheetManager.show('todo-sheet', {payload: {todo: item}});
   };
 
   return (
@@ -46,16 +53,21 @@ const TodoItemComponent = ({item}: ITodoItemComponentProps) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.statusButtonContainer}
-          onPress={() =>
-            SheetManager.show('todo-sheet', {payload: {todo: item}})
-          }>
+          onPress={updateTodoButtonHandler}>
           <EditIcon fill={colors.yellow} size={25} />
         </TouchableOpacity>
-        {item.status === 'Waiting' && (
+        {item.status === Statuses.waiting && (
           <TouchableOpacity
             style={styles.statusButtonContainer}
             onPress={() => changeStatus('Done')}>
             <DoneIcon fill={colors.green} size={25} />
+          </TouchableOpacity>
+        )}
+        {item.status === Statuses.done && (
+          <TouchableOpacity
+            style={styles.statusButtonContainer}
+            onPress={() => changeStatus('Waiting')}>
+            <PendingIcon fill={colors.darkGray} size={25} />
           </TouchableOpacity>
         )}
       </View>
